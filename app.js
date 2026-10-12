@@ -310,6 +310,7 @@ function settingsView() {
   const cats = state.cats.map(c => `<div class="item" style="cursor:default"><span>${esc(c.name)}</span>
     <span><button class="link" data-act="ren-cat" data-id="${c.id}">Rinomina</button><button class="link danger" data-act="del-cat" data-id="${c.id}">Elimina</button></span></div>`).join('');
   return `<h1>Impostazioni</h1>
+    <div id="install"></div>
     <h2>Causali</h2><div class="card">${cats}<div class="actions"><button class="primary" data-act="add-cat">+ Nuova causale</button></div></div>
     <h2>Backup</h2><div class="card"><p class="muted">I dati sono salvati solo su questo telefono. Esporta un backup per non perderli.</p>
       <div class="actions"><button data-act="export">Esporta backup</button><button data-act="import">Importa backup</button></div>
@@ -378,6 +379,7 @@ function loginView(err = '') {
     <p class="muted">Tieni sotto controllo le tue spese, per causale e per periodo. Accedi con Google per salvare i tuoi dati.</p>
     <p class="muted small">I dati sono salvati nel tuo Google Drive, in una cartella riservata a questa app. Nessun altro può leggerli.</p>
     <p class="small"><a href="privacy.html">Privacy</a> · <a href="terms.html">Termini di servizio</a></p>
+    <div id="install"></div>
     ${err ? `<div class="card warnbox">${esc(err)}</div>` : ''}
     ${setup ? '<div class="card warnbox small">Accesso Google non configurato: inserisci il Client ID in <b>config.js</b> (vedi LEGGIMI.md).</div>' : ''}
     <button class="gbtn" data-act="login" ${setup ? 'disabled' : ''}>
@@ -385,7 +387,50 @@ function loginView(err = '') {
       Accedi con Google</button>
   </div>`;
   paintSync();
+  refreshInstall();
 }
+
+// ---------- installazione come app ----------
+let installEvent = null;
+const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+
+function refreshInstall() {
+  const el = $('#install');
+  if (el) el.innerHTML = installCard();
+}
+
+function installCard() {
+  if (isStandalone()) return '';
+  const ua = navigator.userAgent;
+  const ios = /iPad|iPhone|iPod/.test(ua);
+  const inApp = /Android/.test(ua) && (/; wv\)/.test(ua) || /FBAN|FBAV|Instagram|Line\/|Telegram|Snapchat/.test(ua));
+  let text, btn = '';
+  if (installEvent) {
+    text = 'Installala sul telefono: si apre a schermo intero come una vera app.';
+    btn = '<button class="primary block" data-act="install">Installa l\'app</button>';
+  } else if (inApp) {
+    text = 'Questo browser non permette di installare l\'app. Aprila in Chrome.';
+    const intent = `intent://${location.host}${location.pathname}${location.search}#Intent;scheme=${location.protocol.replace(':', '')};package=com.android.chrome;end`;
+    btn = `<a class="btn primary block" href="${intent}">Apri in Chrome</a>`;
+  } else if (ios) {
+    text = 'Tocca Condividi (il quadrato con la freccia) e poi «Aggiungi alla schermata Home».';
+  } else {
+    text = 'Per installarla apri il menu ⋮ di Chrome e scegli «Installa app». Se non la vedi, usa Chrome e naviga qualche secondo nell\'app.';
+  }
+  return `<div class="card"><b>Installa l'app</b><p class="muted">${text}</p>${btn}</div>`;
+}
+
+async function doInstall() {
+  if (!installEvent) return;
+  installEvent.prompt();
+  const choice = await installEvent.userChoice;
+  installEvent = null;
+  if (choice.outcome === 'accepted') toast('Installazione in corso…');
+  refreshInstall();
+}
+
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvent = e; refreshInstall(); });
+window.addEventListener('appinstalled', () => { installEvent = null; toast('App installata'); refreshInstall(); });
 
 async function login() {
   const btn = $('.gbtn');
@@ -431,6 +476,7 @@ function render() {
   if (pick) pick.onchange = () => { state.viewPeriodId = pick.value; render(); };
   const imp = $('#imp');
   if (imp) imp.onchange = importBackup;
+  refreshInstall();
 }
 
 // ---------- causali e backup ----------
@@ -498,6 +544,7 @@ document.addEventListener('click', e => {
     case 'export': return exportBackup();
     case 'import': return $('#imp').click();
     case 'login': return login();
+    case 'install': return doInstall();
     case 'sync-now': return syncNow();
     case 'logout': return logout();
     case 'link-account': return linkAccount();

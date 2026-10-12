@@ -54,7 +54,9 @@ button.primary { background: var(--accent); color: var(--accent-ink); border-col
 button.danger { color: var(--danger); }
 button.link { border: 0; background: none; color: var(--accent); padding: 8px 10px; min-height: 44px; }
 button.link.danger { color: var(--danger); }
-button.block { width: 100%; }
+button.block, a.btn.block { width: 100%; }
+a.btn { display: block; text-align: center; text-decoration: none; line-height: 28px; }
+a.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
 .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
 .actions > button { flex: 1 1 140px; }
 .item { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 0; min-height: 56px;
