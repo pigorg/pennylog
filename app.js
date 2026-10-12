@@ -316,7 +316,7 @@ function settingsView() {
       <input type="file" id="imp" accept="application/json" hidden></div>
     ${historyCard()}
     ${accountCard()}
-    <p class="muted small" style="text-align:center;margin-top:24px"><a href="privacy.html">Informativa sulla privacy</a></p>`;
+    <p class="muted small" style="text-align:center;margin-top:24px"><a href="privacy.html">Privacy</a> · <a href="terms.html">Termini di servizio</a></p>`;
 }
 
 function accountCard() {
@@ -373,11 +373,11 @@ function loginView(err = '') {
   document.body.classList.add('locked');
   const setup = !Auth.configured();
   view.innerHTML = `<div class="login">
-    <img class="logo" src="icons/icon-192.png" alt="">
-    <h1>Spese Personali</h1>
+    <img class="logo-big" src="icons/logo-512.png" alt="Spese Personali, by istore-lab.com">
+    <h1 class="sr-only">Spese Personali</h1>
     <p class="muted">Tieni sotto controllo le tue spese, per causale e per periodo. Accedi con Google per salvare i tuoi dati.</p>
     <p class="muted small">I dati sono salvati nel tuo Google Drive, in una cartella riservata a questa app. Nessun altro può leggerli.</p>
-    <p class="small"><a href="privacy.html">Informativa sulla privacy</a></p>
+    <p class="small"><a href="privacy.html">Privacy</a> · <a href="terms.html">Termini di servizio</a></p>
     ${err ? `<div class="card warnbox">${esc(err)}</div>` : ''}
     ${setup ? '<div class="card warnbox small">Accesso Google non configurato: inserisci il Client ID in <b>config.js</b> (vedi LEGGIMI.md).</div>' : ''}
     <button class="gbtn" data-act="login" ${setup ? 'disabled' : ''}>

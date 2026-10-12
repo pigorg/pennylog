@@ -1,6 +1,6 @@
-const CACHE = 'spese-v12';
-const SHELL = ['./', 'index.html', 'styles.css', 'app.js', 'db.js', 'ocr.js', 'config.js', 'drive.js', 'privacy.html',
-  'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png'];
+const CACHE = 'spese-v16';
+const SHELL = ['./', 'index.html', 'styles.css', 'app.js', 'db.js', 'ocr.js', 'config.js', 'drive.js', 'privacy.html', 'terms.html',
+  'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/logo-512.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));

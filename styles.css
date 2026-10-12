@@ -32,6 +32,7 @@ body.locked main { padding-bottom: calc(var(--sab) + 24px); }
 h1 { font-size: 1.4rem; margin: 0 0 4px; overflow-wrap: anywhere; line-height: 1.2; }
 h2 { font-size: 1.05rem; margin: 22px 0 8px; }
 p { margin: 8px 0; }
+a { color: var(--accent); }
 .muted { color: var(--muted); font-size: .9rem; }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 14px; margin: 12px 0; }
 .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
@@ -101,6 +102,8 @@ input[type=checkbox] { width: 22px; height: 22px; min-height: 0; margin: 0 10px 
 .stat:first-child { margin-top: 0; } .stat:last-child { margin-bottom: 0; }
 .login { min-height: calc(100dvh - 120px); display: flex; flex-direction: column; justify-content: center; gap: 8px; text-align: center; }
 .login .logo { width: 84px; height: 84px; border-radius: 22px; margin: 0 auto 8px; display: block; }
+.logo-big { width: min(240px, 68vw); height: auto; margin: 0 auto 8px; display: block; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .gbtn { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; margin-top: 18px; background: #fff; color: #1f1f1f;
   border: 1px solid #dadce0; font-weight: 600; }
 .gbtn svg { width: 22px; height: 22px; flex: none; }
