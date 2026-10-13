@@ -44,13 +44,20 @@
     }
   }[lang];
 
-  // Consent Mode: tutto negato finché l'utente non sceglie
+  // Il tag di Google può essere già nell'<head> della pagina (snippet standard, preceduto dal blocco che
+  // nega il consenso e sospende la misurazione). In quel caso qui non si ripetono i comandi iniziali
+  // e non si carica una seconda copia del tag.
+  var inlineTag = !!document.querySelector('script[src*="googletagmanager.com/gtag/js?id=' + GA_ID + '"]');
+
   window.dataLayer = window.dataLayer || [];
   function gtag() { window.dataLayer.push(arguments); }
   window.gtag = window.gtag || gtag;
-  gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', wait_for_update: 500 });
-  gtag('set', 'ads_data_redaction', true);
-  gtag('js', new Date());
+  if (!inlineTag) {
+    // Consent Mode: tutto negato finché l'utente non sceglie
+    gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', wait_for_update: 500 });
+    gtag('set', 'ads_data_redaction', true);
+    gtag('js', new Date());
+  }
 
   // ---------- scelta salvata ----------
   function readChoice() {
@@ -69,6 +76,13 @@
   function loadGA() {
     if (gaLoaded) return;
     gaLoaded = true;
+    if (inlineTag) {
+      // Il tag nell'head ha già eseguito 'config' a misurazione sospesa: con il consenso si imposta la
+      // privacy (niente segnali Google né annunci personalizzati) e si conta questa visita.
+      gtag('config', GA_ID, { anonymize_ip: true, allow_google_signals: false, allow_ad_personalization_signals: false, send_page_view: false });
+      gtag('event', 'page_view');
+      return;
+    }
     var s = document.createElement('script');
     s.async = true;
     s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;

@@ -10,6 +10,23 @@
 <link rel="alternate" hreflang="it" href="https://pennylog.istore-lab.com/it/privacy.html">
 <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/site.css">
+<!-- Prima del tag di Google: consenso negato e misurazione sospesa finché il visitatore non accetta il banner (assets/consent.js) -->
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  window['ga-disable-G-GJSYVKX67S'] = true;
+  gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', wait_for_update: 500 });
+  gtag('set', 'ads_data_redaction', true);
+</script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GJSYVKX67S"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-GJSYVKX67S');
+</script>
 <script src="/assets/consent.js" defer></script>
 </head>
 <body>
@@ -62,7 +79,7 @@
   <ul>
     <li><b>What we collect, with your consent:</b> through Google Analytics 4, pages viewed, duration of the visit, referring page, language, browser and device type, and an approximate location. The IP address is not stored in Google Analytics.</li>
     <li><b>Why:</b> to understand how the website is used and to improve it, in aggregate form. We do not use it to identify you, for advertising, or to profile you.</li>
-    <li><b>Legal basis:</b> your consent (Art. 6(1)(a) GDPR). Nothing from Google Analytics is loaded until you accept. You can change or withdraw your choice at any time with “Cookie settings” at the bottom of every page.</li>
+    <li><b>Legal basis:</b> your consent (Art. 6(1)(a) GDPR). Until you accept, no cookies are set and no measurement data is sent; the Google Analytics script file is still downloaded from Google, which receives technical data such as your IP address and browser details. You can change or withdraw your choice at any time with “Cookie settings” at the bottom of every page.</li>
     <li><b>Recipients and transfers:</b> Google, as our analytics provider, which may process data outside the European Economic Area under the EU–US Data Privacy Framework and standard contractual clauses.</li>
     <li><b>Retention:</b> cookies last up to 2 years; data in Google Analytics is kept for at most 14 months.</li>
   </ul>
