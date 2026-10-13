@@ -48,7 +48,7 @@ async function scanReceipt(file, onProgress) {
   await loadScript(TESS_URL);
   const img = await downscale(file);
   const { data } = await Tesseract.recognize(img, 'ita', {
-    logger: m => onProgress && m.status === 'recognizing text' && onProgress(m.progress),
+    logger: m => onProgress && onProgress(m.status, m.progress),
   });
   return { text: data.text, cents: parseTotal(data.text) };
 }

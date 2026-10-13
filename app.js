@@ -67,11 +67,15 @@ dlg.addEventListener('close', () => document.body.classList.remove('dlg-open'));
 const catOptions = sel => state.cats.map(c => `<option value="${c.id}" ${c.id === sel ? 'selected' : ''}>${esc(c.name)}</option>`).join('');
 const monthName = () => new Date().toLocaleDateString('it-IT', { month: 'long', year: 'numeric' }).replace(/^./, c => c.toUpperCase());
 
+// Il budget parte da 0 (nessun budget) e, una volta impostato, viene riproposto a ogni nuova nota:
+// vale quello dell'ultimo periodo, aperto o chiuso (state.periods è ordinato dal più recente).
+const lastBudget = () => (state.periods[0] ? state.periods[0].budget || 0 : 0);
+
 function periodForm(p = {}) {
   return `
     <label>Nome della nota</label><input name="name" required value="${esc(p.name ?? monthName())}">
     <label>Data di apertura</label><input type="date" name="start" required value="${p.start ?? todayStr()}">
-    <label>Budget (opzionale, €)</label><input name="budget" inputmode="decimal" placeholder="es. 800,00" value="${p.budget ? centsToInput(p.budget) : ''}">`;
+    <label>Budget (€) · 0 = nessun budget</label><input name="budget" inputmode="decimal" value="${centsToInput(p.budget ?? lastBudget())}">`;
 }
 
 // ---------- azioni ----------
@@ -104,7 +108,7 @@ function closePeriodDialog() {
     <label>Data di chiusura</label><input type="date" name="end" required value="${todayStr()}">
     <label>Nota di chiusura</label><textarea name="note" rows="3" placeholder="Come è andato il periodo?"></textarea>
     <label class="check"><input type="checkbox" name="again" checked> Apri subito una nuova nota</label>
-    <label>Budget della nuova nota (€)</label><input name="budget" inputmode="decimal" value="${p.budget ? centsToInput(p.budget) : ''}">
+    <label>Budget della nuova nota (€) · 0 = nessun budget</label><input name="budget" inputmode="decimal" value="${centsToInput(p.budget || 0)}">
     <div class="actions"><button class="primary">Chiudi periodo</button><button type="button" data-close>Annulla</button></div>`, async fd => {
     const end = fd.get('end');
     if (end < p.start) { toast('La chiusura non può precedere l\'apertura'); return false; }
@@ -122,9 +126,9 @@ function closePeriodDialog() {
 function expenseDialog(e = null) {
   if (!openPeriod()) { toast('Crea prima una nota spese'); return; }
   const f = showDialog(`<h1>${e ? 'Modifica spesa' : 'Nuova spesa'}</h1>
-    <button type="button" id="scan" class="primary" style="width:100%">📷 Scansiona scontrino</button>
-    <input type="file" id="file" accept="image/*" capture="environment" hidden>
-    <div id="scanmsg" class="muted"></div>
+    <label class="btn primary block scanbtn" for="file">📷 Scansiona scontrino</label>
+    <input type="file" id="file" accept="image/*" class="sr-only">
+    <div id="scanmsg" class="muted" aria-live="polite"></div>
     <label>Importo (€)</label><input name="amount" id="amount" inputmode="decimal" required placeholder="0,00" value="${e ? centsToInput(e.amount) : ''}">
     <label>Causale</label><select name="cat">${catOptions(e?.categoryId)}</select>
     <label>Data</label><input type="date" name="date" required value="${e?.date ?? todayStr()}">
@@ -143,21 +147,29 @@ function expenseDialog(e = null) {
     await refresh();
   });
   const file = f.querySelector('#file');
-  f.querySelector('#scan').onclick = () => file.click();
+  // Il pulsante è una <label> collegata al campo file: il browser apre da solo il selettore
+  // (fotocamera o galleria), senza dipendere da un click via script.
   file.onchange = async () => {
-    if (!file.files[0]) return;
+    const img = file.files[0];
+    if (!img) return;
     const msg = f.querySelector('#scanmsg');
-    msg.textContent = 'Lettura in corso…';
+    msg.textContent = 'Immagine ricevuta, preparo la lettura…';
+    const steps = { 'loading tesseract core': 'Carico il motore di lettura (la prima volta serve la rete)…',
+      'loading language traineddata': 'Carico la lingua italiana…', 'initializing api': 'Avvio la lettura…' };
     try {
-      const { cents } = await scanReceipt(file.files[0], p => { msg.textContent = `Lettura in corso… ${Math.round(p * 100)}%`; });
+      const { cents } = await scanReceipt(img, (status, p) => {
+        msg.textContent = status === 'recognizing text' ? `Lettura in corso… ${Math.round(p * 100)}%` : (steps[status] || msg.textContent);
+      });
       if (cents) {
         f.querySelector('#amount').value = centsToInput(cents);
         msg.textContent = `Totale rilevato: ${eur(cents)}. Controlla che sia corretto.`;
       } else {
-        msg.textContent = 'Totale non riconosciuto, inseriscilo a mano.';
+        msg.textContent = 'Totale non riconosciuto: inseriscilo a mano o riprova con una foto più nitida.';
       }
     } catch (err) {
-      msg.textContent = err.message;
+      msg.textContent = 'Lettura non riuscita: ' + (err && err.message ? err.message : 'riprova') + ' Puoi inserire l\'importo a mano.';
+    } finally {
+      file.value = ''; // permette di scegliere di nuovo la stessa foto
     }
   };
   const del = f.querySelector('#del');
