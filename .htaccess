@@ -12,6 +12,11 @@ DirectoryIndex index.html
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 </IfModule>
 
+# Niente accesso ai file nascosti (compreso lo stato del deploy), tranne .well-known
+<IfModule mod_rewrite.c>
+  RewriteRule "(^|/)\.(?!well-known/)" - [F,L]
+</IfModule>
+
 # Pagina di errore
 ErrorDocument 404 /404.html
 

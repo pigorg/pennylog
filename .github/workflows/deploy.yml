@@ -1,0 +1,55 @@
+# Pubblica il sito sul tuo hosting (FTP/FTPS) a ogni push su main.
+# Funziona solo dopo aver creato i "Secrets" del repository (vedi README, sezione Deploy).
+# Senza i secrets non fa nulla e non dà errore.
+name: Deploy sul sito
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # si può lanciare anche a mano da GitHub → Actions
+
+# Un solo deploy alla volta, senza interromperne uno in corso
+concurrency:
+  group: deploy-sito
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      HAS_FTP: ${{ secrets.FTP_SERVER != '' && secrets.FTP_USERNAME != '' && secrets.FTP_PASSWORD != '' && 'yes' || 'no' }}
+    steps:
+      - name: Secrets non impostati
+        if: env.HAS_FTP != 'yes'
+        run: echo "Deploy saltato. Imposta FTP_SERVER, FTP_USERNAME, FTP_PASSWORD (e FTP_DIR) nei Secrets del repository."
+
+      # Azioni bloccate a una versione precisa (commit), non a un tag che potrebbe essere spostato
+      - name: Scarica il codice
+        if: env.HAS_FTP == 'yes'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Carica i file sul server
+        if: env.HAS_FTP == 'yes'
+        uses: SamKirkland/FTP-Deploy-Action@8e83cea8672e3fbcbb9fdafff34debf6ae4c5f65 # v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ${{ secrets.FTP_PROTOCOL || 'ftps' }}
+          server-dir: ${{ secrets.FTP_DIR || './' }}
+          local-dir: ./
+          # Carica solo ciò che è cambiato; i file tolti dal repository vengono tolti anche dal server.
+          exclude: |
+            **/.git*
+            **/.git*/**
+            .github/**
+            .claude/**
+            README.md
+            CNAME
+            .nojekyll
+            *.zip

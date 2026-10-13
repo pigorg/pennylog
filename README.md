@@ -32,9 +32,23 @@ npx serve . -l 8080        # or: python -m http.server 8080
 3. **Credentials → OAuth client ID → Web application**. Authorized JavaScript origins: `https://pennylog.istore-lab.com` and, for local tests, `http://localhost:8080`. No redirect URIs.
 4. Put the Client ID in `app/config.js`. The client secret is not used and must never be committed.
 
-## Deploy (GitHub Pages)
+## Deploy
 
-Settings → Pages → Deploy from branch `main`, folder `/ (root)`. Custom domain: DNS `CNAME pennylog → <github-user>.github.io`, then set the custom domain in Pages and enable *Enforce HTTPS*.
+`pennylog.istore-lab.com` is served by the Apache hosting, **not** by GitHub Pages: a `git push` alone does not change the live site. The repository deploys itself through GitHub Actions (`.github/workflows/deploy.yml`): every push to `main` uploads the changed files over FTPS and removes the deleted ones.
+
+One-time setup, in GitHub → repository → Settings → Secrets and variables → Actions → *New repository secret*:
+
+| Secret | Value |
+|---|---|
+| `FTP_SERVER` | FTP host of the hosting (e.g. `ftp.istore-lab.com`) |
+| `FTP_USERNAME` | a **dedicated FTP account** limited to the site folder |
+| `FTP_PASSWORD` | its password |
+| `FTP_DIR` | folder of the site, ending with `/` (e.g. `/public_html/pennylog/`); default `./` |
+| `FTP_PROTOCOL` | optional: `ftps` (default), `ftp` or `ftps-legacy` |
+
+Then `git push`; follow the run in the *Actions* tab (it can also be started by hand with *Run workflow*). Without the secrets the workflow does nothing. The first run uploads everything (about 14 MB); later runs only what changed. Hidden files (the deploy state, `.git`) are never served: `.htaccess` blocks them, except `.well-known`.
+
+Manual alternative: upload the files by FTP (`index.html`, `privacy.html`, `terms.html`, `cookies.html`, `404.html`, `robots.txt`, `sitemap.xml`, `.htaccess`, `.well-known/`, `assets/`, `it/`, `app/`), leaving out `.git`, `.github`, `README.md` and `CNAME`.
 
 After changing files under `app/`, bump `CACHE` in `app/sw.js` so installed apps pick up the update.
 
