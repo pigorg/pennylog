@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://pennylog.istore-lab.com/sitemap.xml
