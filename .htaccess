@@ -1,0 +1,54 @@
+# Pennylog: impostazioni per Apache. GitHub Pages le ignora, l'hosting Apache le applica.
+# Va nella cartella radice del sito pennylog.istore-lab.com, accanto a index.html.
+
+Options -Indexes
+DirectoryIndex index.html
+
+# Sempre HTTPS
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# Pagina di errore
+ErrorDocument 404 /404.html
+
+# Tipi di file (il manifest dell'app deve essere servito come JSON)
+<IfModule mod_mime.c>
+  AddType application/manifest+json .webmanifest
+  AddType text/javascript .js
+  AddType image/svg+xml .svg
+  AddCharset UTF-8 .html .css .js .svg .webmanifest .xml .txt
+</IfModule>
+
+# Compressione
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json application/manifest+json image/svg+xml application/xml text/xml text/plain
+</IfModule>
+
+# Cache: pagine, codice e service worker si ricontrollano sempre (così gli aggiornamenti arrivano),
+# le immagini restano in cache a lungo.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|css|js|webmanifest|xml|txt)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  <FilesMatch "\.(png|jpg|jpeg|svg|ico|webp)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+
+  # Sicurezza. La fotocamera serve all'app per scansionare gli scontrini.
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(self), microphone=(), geolocation=()"
+  Header always set Strict-Transport-Security "max-age=31536000"
+</IfModule>
+
+# Il file di verifica per l'app Android (Digital Asset Links) deve essere JSON
+<IfModule mod_mime.c>
+  <Files "assetlinks.json">
+    ForceType application/json
+  </Files>
+</IfModule>
