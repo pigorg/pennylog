@@ -45,3 +45,23 @@ Each record carries `updatedAt`; deletions are tombstones; the most recent chang
 ## Languages and currencies
 
 `app/i18n.js` holds the dictionary (Italian text is the key, English is looked up). Language follows the phone and can be changed in Settings. Currency is chosen from the region and can be changed in Settings; amounts are stored in minor units.
+
+## Analytics and cookies
+
+Google Analytics 4 (`G-GJSYVKX67S`) runs **only on the website** (landing, privacy, terms, cookies, 404), never inside `/app/`. It is loaded by `assets/consent.js` only after the visitor accepts the cookie banner (Consent Mode v2, everything denied by default, Google signals and ad personalisation off). The choice is stored in `localStorage` (`pl_consent`, 6 months) and can be changed from the "Cookie settings" link in every footer. Global Privacy Control is treated as a refusal.
+
+To reuse the banner elsewhere, add `<script src="/assets/consent.js" defer></script>` to the page and a `data-cookie-settings` attribute to any link or button that should reopen the preferences.
+
+In Google Analytics (Admin): turn off Google signals, set data retention to 14 months or less, uncheck all data-sharing settings, accept the Data Processing Amendment. Keep the privacy and cookie pages in sync with whatever is configured there.
+
+## Security
+
+- **Untrusted data is validated.** A backup you import and the file read from Drive are rebuilt field by field in `app/db.js` (`sanitizeData`): ids must match `[A-Za-z0-9_-]{1,64}` (and not `__proto__`/`constructor`), dates must be real `YYYY-MM-DD`, amounts safe integers between 1 and 10^11 cents, texts are length-limited. Anything else is dropped and the number of dropped items is shown after an import.
+- **Everything is escaped** before it reaches `innerHTML` (`esc()`), including ids and dates used in attributes. Dictionaries keyed by data use `Object.create(null)`.
+- **Content Security Policy** (meta tag in `app/index.html`, plus `frame-ancestors 'self'` from `app/.htaccess`): scripts only from the same origin and Google's sign-in script, connections only to Google (sign-in and Drive), no inline scripts, no `eval`, no plugins.
+- **No third-party code at runtime.** The receipt reader (Tesseract.js, WebAssembly core, language data) is hosted in `app/vendor/tesseract/`, with sources and SHA-384 hashes in `NOTICE.txt`. No CDN.
+- **Tokens** live only in memory, never in storage. Logout wipes the local database.
+- **Headers** (`.htaccess`): HTTPS redirect, HSTS, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy` (camera only for the app itself).
+- Report vulnerabilities to the address in `/.well-known/security.txt`.
+
+Known limits: data on the device and in Drive is not end-to-end encrypted (it is protected by the phone and by the Google account); the app has no PIN lock; the Google access token lasts about an hour.

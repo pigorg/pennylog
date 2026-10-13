@@ -61,7 +61,7 @@ function showDialog(html, onSubmit) {
 }
 dlg.addEventListener('close', () => document.body.classList.remove('dlg-open'));
 
-const catOptions = sel => sortedCats().map(c => `<option value="${c.id}" ${c.id === sel ? 'selected' : ''}>${esc(catLabel(c))}</option>`).join('');
+const catOptions = sel => sortedCats().map(c => `<option value="${esc(c.id)}" ${c.id === sel ? 'selected' : ''}>${esc(catLabel(c))}</option>`).join('');
 
 // Il budget parte da 0 (nessun budget) e, una volta impostato, viene riproposto a ogni nuova nota:
 // vale quello dell'ultimo periodo, aperto o chiuso (state.periods è ordinato dal più recente).
@@ -71,8 +71,8 @@ const buttons = (ok, extra = '') => `<div class="actions"><button class="primary
 
 function periodForm(p = {}) {
   return `
-    <label>${t('Nome della nota')}</label><input name="name" required value="${esc(p.name ?? monthName())}">
-    <label>${t('Data di apertura')}</label><input type="date" name="start" required value="${p.start ?? todayStr()}">
+    <label>${t('Nome della nota')}</label><input name="name" required maxlength="80" value="${esc(p.name ?? monthName())}">
+    <label>${t('Data di apertura')}</label><input type="date" name="start" required value="${esc(p.start ?? todayStr())}">
     <label>${t('Budget ({sym}) · 0 = nessun budget', { sym: curSymbol() })}</label><input name="budget" inputmode="decimal" value="${centsToInput(p.budget ?? lastBudget())}">`;
 }
 
@@ -80,7 +80,7 @@ function periodForm(p = {}) {
 function newPeriodDialog() {
   showDialog(`<h1>${t('Nuova nota spese')}</h1>${periodForm()}${buttons(t('Crea'))}`, async fd => {
     const budget = fd.get('budget') ? parseAmount(fd.get('budget')) : 0;
-    if (Number.isNaN(budget)) { toast(t('Budget non valido')); return false; }
+    if (Number.isNaN(budget) || budget > MAX_CENTS) { toast(t('Budget non valido')); return false; }
     await DB.put('periods', { id: uid(), name: fd.get('name').trim(), start: fd.get('start'), end: null, budget, note: '', status: 'open' });
     await refresh();
   });
@@ -90,7 +90,7 @@ function editPeriodDialog() {
   const p = openPeriod();
   showDialog(`<h1>${t('Modifica nota')}</h1>${periodForm(p)}${buttons(t('Salva'))}`, async fd => {
     const budget = fd.get('budget') ? parseAmount(fd.get('budget')) : 0;
-    if (Number.isNaN(budget)) { toast(t('Budget non valido')); return false; }
+    if (Number.isNaN(budget) || budget > MAX_CENTS) { toast(t('Budget non valido')); return false; }
     await DB.put('periods', { ...p, name: fd.get('name').trim(), start: fd.get('start'), budget });
     await refresh();
   });
@@ -102,14 +102,14 @@ function closePeriodDialog() {
   showDialog(`<h1>${t('Chiudi "{name}"', { name: esc(p.name) })}</h1>
     <p class="muted">${t('{count}, totale {total}. Verranno salvate nello storico.', { count: tn(list.length, '{n} spesa', '{n} spese'), total: money(sum(list)) })}</p>
     <label>${t('Data di chiusura')}</label><input type="date" name="end" required value="${todayStr()}">
-    <label>${t('Nota di chiusura')}</label><textarea name="note" rows="3" placeholder="${t('Come è andato il periodo?')}"></textarea>
+    <label>${t('Nota di chiusura')}</label><textarea name="note" rows="3" maxlength="1000" placeholder="${t('Come è andato il periodo?')}"></textarea>
     <label class="check"><input type="checkbox" name="again" checked> ${t('Apri subito una nuova nota')}</label>
     <label>${t('Budget della nuova nota ({sym}) · 0 = nessun budget', { sym: curSymbol() })}</label><input name="budget" inputmode="decimal" value="${centsToInput(p.budget || 0)}">
     ${buttons(t('Chiudi periodo'))}`, async fd => {
     const end = fd.get('end');
     if (end < p.start) { toast(t('La chiusura non può precedere l\'apertura')); return false; }
     const budget = fd.get('budget') ? parseAmount(fd.get('budget')) : 0;
-    if (Number.isNaN(budget)) { toast(t('Budget non valido')); return false; }
+    if (Number.isNaN(budget) || budget > MAX_CENTS) { toast(t('Budget non valido')); return false; }
     await DB.put('periods', { ...p, end, note: fd.get('note').trim(), status: 'closed' });
     if (fd.get('again')) {
       await DB.put('periods', { id: uid(), name: t('Nuova nota'), start: addDays(end, 1), end: null, budget, note: '', status: 'open' });
@@ -165,11 +165,11 @@ function expenseDialog(e = null) {
     <div id="scanmsg" class="muted" aria-live="polite"></div>
     <label>${t('Importo ({sym})', { sym: curSymbol() })}</label><input name="amount" id="amount" inputmode="decimal" required placeholder="${centsToInput(0)}" value="${e ? centsToInput(e.amount) : ''}">
     <label>${t('Causale')}</label><select name="cat">${catOptions(e?.categoryId)}</select>
-    <label>${t('Data')}</label><input type="date" name="date" required value="${e?.date ?? todayStr()}">
-    <label>${t('Descrizione (opzionale)')}</label><input name="desc" value="${esc(e?.desc ?? '')}">
+    <label>${t('Data')}</label><input type="date" name="date" required value="${esc(e?.date ?? todayStr())}">
+    <label>${t('Descrizione (opzionale)')}</label><input name="desc" maxlength="200" value="${esc(e?.desc ?? '')}">
     ${buttons(t('Salva'), e ? `<button type="button" class="danger" id="del">${t('Elimina')}</button>` : '')}`, async fd => {
     const amount = parseAmount(fd.get('amount'));
-    if (!(amount > 0)) { toast(t('Importo non valido')); return false; }
+    if (!(amount > 0 && amount <= MAX_CENTS)) { toast(t('Importo non valido')); return false; }
     await DB.put('expenses', {
       id: e?.id ?? uid(), periodId: e?.periodId ?? openPeriod().id, amount, categoryId: fd.get('cat'),
       date: fd.get('date'), desc: fd.get('desc').trim(), createdAt: e?.createdAt ?? Date.now(),
@@ -245,7 +245,7 @@ function homeView() {
   const items = list.map(e => {
     const head = e.date !== lastDay ? `<div class="day">${fmtDate(e.date)}</div>` : '';
     lastDay = e.date;
-    return `${head}<div class="item" data-act="edit-exp" data-id="${e.id}">
+    return `${head}<div class="item" data-act="edit-exp" data-id="${esc(e.id)}">
       <div>${esc(catName(e.categoryId))}<small>${esc(e.desc)}</small></div><b>${money(e.amount)}</b></div>`;
   }).join('');
   return `
@@ -275,7 +275,7 @@ function statsHtml(p, list) {
 function byCategoryHtml(list, p) {
   const total = sum(list) || 1;
   const days = Math.max(1, daysBetween(p.start, p.end || todayStr()));
-  const map = {};
+  const map = Object.create(null);
   list.forEach(e => {
     const c = map[e.categoryId] || (map[e.categoryId] = { sum: 0, n: 0, max: 0 });
     c.sum += e.amount;
@@ -292,7 +292,7 @@ function byCategoryHtml(list, p) {
 }
 
 function monthlyHtml() {
-  const map = {};
+  const map = Object.create(null);
   state.expenses.forEach(e => { const k = e.date.slice(0, 7); map[k] = (map[k] || 0) + e.amount; });
   const rows = Object.keys(map).sort().reverse().map(k =>
     `<div class="item" style="cursor:default"><span>${esc(monthLabel(k))}</span><b>${money(map[k])}</b></div>`).join('');
@@ -302,11 +302,11 @@ function monthlyHtml() {
 function reportView() {
   const id = state.viewPeriodId && state.periods.find(p => p.id === state.viewPeriodId) ? state.viewPeriodId : (openPeriod() || state.periods[0] || {}).id;
   const p = state.periods.find(x => x.id === id);
-  const sel = state.periods.map(x => `<option value="${x.id}" ${x.id === id ? 'selected' : ''}>${esc(x.name)} (${fmtDate(x.start)} – ${x.end ? fmtDate(x.end) : t('in corso')})</option>`).join('');
+  const sel = state.periods.map(x => `<option value="${esc(x.id)}" ${x.id === id ? 'selected' : ''}>${esc(x.name)} (${fmtDate(x.start)} – ${x.end ? fmtDate(x.end) : t('in corso')})</option>`).join('');
   if (!p) return `<h1>${t('Report')}</h1><div class="card empty">${t('Nessun dato.')}</div>`;
   const list = periodExpenses(p.id);
   const del = p.status === 'closed'
-    ? `<div class="actions"><button class="danger block" data-act="del-period" data-id="${p.id}">${t('Elimina questo periodo')}</button></div>` : '';
+    ? `<div class="actions"><button class="danger block" data-act="del-period" data-id="${esc(p.id)}">${t('Elimina questo periodo')}</button></div>` : '';
   return `<h1>${t('Report')}</h1><select id="pick">${sel}</select>${statsHtml(p, list)}${del}${byCategoryHtml(list, p)}${monthlyHtml()}`;
 }
 
@@ -314,7 +314,7 @@ function historyView() {
   const closed = state.periods.filter(p => p.status === 'closed');
   const rows = closed.map(p => {
     const list = periodExpenses(p.id);
-    return `<div class="item" data-act="open-report" data-id="${p.id}">
+    return `<div class="item" data-act="open-report" data-id="${esc(p.id)}">
       <div><b>${esc(p.name)}</b><small>${fmtDate(p.start)} – ${fmtDate(p.end)} · ${tn(list.length, '{n} spesa', '{n} spese')}</small>${p.note ? `<small>“${esc(p.note)}”</small>` : ''}</div>
       <b>${money(sum(list))}</b></div>`;
   }).join('');
@@ -372,7 +372,7 @@ function prefsCard() {
 
 function settingsView() {
   const cats = sortedCats().map(c => `<div class="item" style="cursor:default"><span>${esc(catLabel(c))}</span>
-    <span><button class="link" data-act="ren-cat" data-id="${c.id}">${t('Rinomina')}</button><button class="link danger" data-act="del-cat" data-id="${c.id}">${t('Elimina')}</button></span></div>`).join('');
+    <span><button class="link" data-act="ren-cat" data-id="${esc(c.id)}">${t('Rinomina')}</button><button class="link danger" data-act="del-cat" data-id="${esc(c.id)}">${t('Elimina')}</button></span></div>`).join('');
   return `<h1>${t('Impostazioni')}</h1>
     <div id="install"></div>
     <h2>${t('Causali')}</h2><div class="card">${cats}<div class="actions"><button class="primary" data-act="add-cat">${t('+ Nuova causale')}</button></div></div>
@@ -382,7 +382,7 @@ function settingsView() {
       <input type="file" id="imp" accept="application/json" hidden></div>
     ${historyCard()}
     ${accountCard()}
-    <p class="muted small" style="text-align:center;margin-top:24px"><a href="${legalHref('privacy')}">${t('Privacy')}</a> · <a href="${legalHref('terms')}">${t('Termini di servizio')}</a></p>`;
+    <p class="muted small" style="text-align:center;margin-top:24px"><a href="${legalHref('privacy')}">${t('Privacy')}</a> · <a href="${legalHref('terms')}">${t('Termini di servizio')}</a> · <a href="${legalHref('cookies')}">${t('Cookie policy')}</a></p>`;
 }
 
 function accountCard() {
@@ -444,7 +444,7 @@ function loginView(err = '') {
     <h1 class="sr-only">Pennylog</h1>
     <p class="muted">${t('Tieni sotto controllo le tue spese, per causale e per periodo. Accedi con Google per salvare i tuoi dati.')}</p>
     <p class="muted small">${t('I dati sono salvati nel tuo Google Drive, in una cartella riservata a questa app. Nessun altro può leggerli.')}</p>
-    <p class="small"><a href="${legalHref('privacy')}">${t('Privacy')}</a> · <a href="${legalHref('terms')}">${t('Termini di servizio')}</a> · ${langLinks}</p>
+    <p class="small"><a href="${legalHref('privacy')}">${t('Privacy')}</a> · <a href="${legalHref('terms')}">${t('Termini di servizio')}</a> · <a href="${legalHref('cookies')}">${t('Cookie policy')}</a> · ${langLinks}</p>
     <div id="install"></div>
     ${err ? `<div class="card warnbox">${esc(err)}</div>` : ''}
     ${setup ? `<div class="card warnbox small">${t('Accesso Google non configurato: inserisci il Client ID in <b>config.js</b> (vedi README.md).')}</div>` : ''}
@@ -476,8 +476,8 @@ function installCard() {
     btn = `<button class="primary block" data-act="install">${t('Installa l\'app')}</button>`;
   } else if (inApp) {
     text = t('Questo browser non permette di installare l\'app. Aprila in Chrome.');
-    const intent = `intent://${location.host}${location.pathname}${location.search}#Intent;scheme=${location.protocol.replace(':', '')};package=com.android.chrome;end`;
-    btn = `<a class="btn primary block" href="${intent}">${t('Apri in Chrome')}</a>`;
+    const intent = `intent://${location.host}${location.pathname}#Intent;scheme=${location.protocol.replace(':', '')};package=com.android.chrome;end`;
+    btn = `<a class="btn primary block" href="${esc(intent)}">${t('Apri in Chrome')}</a>`;
   } else if (ios) {
     text = t('Tocca Condividi (il quadrato con la freccia) e poi «Aggiungi alla schermata Home».');
   } else {
@@ -557,7 +557,7 @@ function changePrefs(apply) {
 // ---------- causali e backup ----------
 function catDialog(c) {
   showDialog(`<h1>${c ? t('Rinomina causale') : t('Nuova causale')}</h1>
-    <label>${t('Nome')}</label><input name="name" required value="${esc(c ? catLabel(c) : '')}">
+    <label>${t('Nome')}</label><input name="name" required maxlength="60" value="${esc(c ? catLabel(c) : '')}">
     ${buttons(t('Salva'))}`, async fd => {
     const name = fd.get('name').trim();
     if (!name) return false;
@@ -588,11 +588,12 @@ async function importBackup(ev) {
   const file = ev.target.files[0];
   if (!file) return;
   try {
+    if (file.size > 20 * 1024 * 1024) throw new Error();
     const data = JSON.parse(await file.text());
-    if (!data.periods || !data.expenses || !data.categories) throw new Error();
+    if (!data || typeof data !== 'object' || !Array.isArray(data.periods) || !Array.isArray(data.expenses) || !Array.isArray(data.categories)) throw new Error();
     if (!confirm(t('L\'importazione sostituisce tutti i dati attuali. Continuare?'))) return;
-    await DB.replaceAll(data);
-    toast(t('Backup importato'));
+    const { dropped } = await DB.replaceAll(data);
+    toast(dropped ? t('Backup importato, {n} elementi non validi ignorati', { n: dropped }) : t('Backup importato'));
     await refresh();
   } catch {
     toast(t('File di backup non valido'));

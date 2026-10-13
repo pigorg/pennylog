@@ -1,0 +1,20 @@
+Pennylog: componenti di terze parti per la lettura degli scontrini (OCR)
+=====================================================================
+
+Questi file sono copie identiche dei pacchetti ufficiali, ospitate sul nostro dominio per due motivi:
+nessun codice eseguibile arriva da servizi esterni (sicurezza), e le foto degli scontrini non
+generano nessuna richiesta verso terzi (privacy). Non vanno modificati. Per aggiornarli si scaricano
+di nuovo dagli stessi indirizzi, si ricalcolano le impronte qui sotto e si aumenta CACHE in ../../sw.js.
+
+Licenza: Apache-2.0 (vedi LICENSE-tesseract.js.txt e LICENSE-tesseract.js-core.txt).
+Dati linguistici: progetto tessdata_best (Apache-2.0), versione "best_int" ridotta da @tesseract.js-data.
+
+File                                      Origine                                                                              SHA-384 (base64)
+tesseract.min.js                          npm: tesseract.js@5.1.1, dist/tesseract.min.js                                        GJqSu7vueQ9qN0E9yLPb3Wtpd7OrgK8KmYzC8T1IysG1bcvxvIO4qtYR/D3A991F
+worker.min.js                             npm: tesseract.js@5.1.1, dist/worker.min.js                                           zxn+VqofFzXpH99dUb3fa4ywoSBQJPy6/6oEaJHPlblZXr53a0g1Jl6720vgSzB7
+core/tesseract-core-lstm.wasm.js          npm: tesseract.js-core@5.1.1, tesseract-core-lstm.wasm.js                              EKWY5JDwphQoyxhvYU7eaCcyQ0EdV6fZK3L2vzfZcv2ichRdNd6pSnyWPNv6fMuR
+core/tesseract-core-simd-lstm.wasm.js     npm: tesseract.js-core@5.1.1, tesseract-core-simd-lstm.wasm.js                         YM1G+zaWYy9VSRP2C101LCgzh7n3Hqb6OEm9qDoZYgCADsni3nnECskC3WialQB7
+lang/eng.traineddata.gz                   npm: @tesseract.js-data/eng, 4.0.0_best_int/eng.traineddata.gz                          JI+fraGAoc5GBGIliuqzHRnP1nJyrukg5ggNSBv/TO+YOVj+6Te6XXQOx7ia10xq
+lang/ita.traineddata.gz                   npm: @tesseract.js-data/ita, 4.0.0_best_int/ita.traineddata.gz                          bYaS9eoIdyX0scqc490EOhyzgPEWB0SgGWEkCyROUZfVr+o0KhvOqTg7UUZfDEpr
+
+Verifica:  openssl dgst -sha384 -binary <file> | openssl base64 -A

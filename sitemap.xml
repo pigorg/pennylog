@@ -38,4 +38,16 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://pennylog.istore-lab.com/terms.html"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://pennylog.istore-lab.com/it/terms.html"/>
   </url>
+  <url>
+    <loc>https://pennylog.istore-lab.com/cookies.html</loc>
+    <lastmod>2026-10-13</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pennylog.istore-lab.com/cookies.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pennylog.istore-lab.com/it/cookies.html"/>
+  </url>
+  <url>
+    <loc>https://pennylog.istore-lab.com/it/cookies.html</loc>
+    <lastmod>2026-10-13</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pennylog.istore-lab.com/cookies.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pennylog.istore-lab.com/it/cookies.html"/>
+  </url>
 </urlset>

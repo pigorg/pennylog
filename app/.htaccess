@@ -1,0 +1,10 @@
+# Impostazioni per la cartella dell'app (Apache). Si aggiungono a quelle della radice.
+
+<IfModule mod_headers.c>
+  # Nessuno può incorniciare l'app dentro un altro sito (clickjacking). Il resto della policy è nel meta di index.html.
+  Header always set Content-Security-Policy "frame-ancestors 'self'"
+  # Il motore di lettura scontrini non cambia mai: il browser può tenerlo a lungo.
+  <FilesMatch "\.(wasm\.js|traineddata\.gz)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+</IfModule>

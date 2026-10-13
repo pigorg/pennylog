@@ -1,0 +1,4 @@
+Contact: mailto:informazioni@istore-lab.com
+Expires: 2027-10-13T00:00:00.000Z
+Preferred-Languages: en, it
+Canonical: https://pennylog.istore-lab.com/.well-known/security.txt

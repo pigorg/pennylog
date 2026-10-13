@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<!-- Content Security Policy: il codice si carica solo dal nostro dominio e dallo script di accesso di Google;
+     le connessioni vanno solo a Google (accesso e Drive). Nessun codice inline, nessuna CDN. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://accounts.google.com/gsi/client 'wasm-unsafe-eval'; connect-src 'self' https://www.googleapis.com https://accounts.google.com https://oauth2.googleapis.com; frame-src https://accounts.google.com; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self'; media-src 'self' blob:; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f4f6f6" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0e1514" media="(prefers-color-scheme: dark)">

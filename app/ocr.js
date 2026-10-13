@@ -1,5 +1,7 @@
-// OCR scontrini: Tesseract.js eseguito sul dispositivo, l'immagine non viene inviata a nessuno.
-const TESS_URL = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
+// OCR scontrini: Tesseract.js eseguito sul dispositivo. L'immagine non viene inviata a nessuno e
+// tutto il codice e i dati di lettura arrivano dal nostro dominio (app/vendor/tesseract), mai da una CDN.
+const OCR_BASE = new URL('vendor/tesseract/', location.href).href;
+const TESS_URL = OCR_BASE + 'tesseract.min.js';
 
 function loadScript(src) {
   return new Promise((res, rej) => {
@@ -55,6 +57,10 @@ async function scanReceipt(file, onProgress) {
   await loadScript(TESS_URL);
   const img = await downscale(file);
   const { data } = await Tesseract.recognize(img, ocrLang(), {
+    workerPath: OCR_BASE + 'worker.min.js',
+    corePath: OCR_BASE + 'core',
+    langPath: OCR_BASE + 'lang',
+    workerBlobURL: false, // il worker parte dal nostro file, senza blob
     logger: m => onProgress && onProgress(m.status, m.progress),
   });
   return { text: data.text, cents: parseTotal(data.text) };
