@@ -123,10 +123,48 @@ function closePeriodDialog() {
   });
 }
 
+// Mostra la fotocamera a schermo intero e restituisce { blob } dopo lo scatto,
+// { cancelled: true } se l'utente annulla, { error } se non è disponibile o manca il permesso.
+async function openCamera() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return { error: 'unsupported' };
+  let stream;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false });
+  } catch (err) {
+    return { error: err.name || 'error' };
+  }
+  return new Promise(resolve => {
+    const cd = document.createElement('dialog');
+    cd.className = 'camdlg';
+    cd.innerHTML = `<video playsinline muted autoplay></video>
+      <div class="camhint">Inquadra lo scontrino, con il totale ben visibile</div>
+      <div class="camctl"><button type="button" class="camcancel">Annulla</button>
+      <button type="button" class="shutter" aria-label="Scatta"></button><span></span></div>`;
+    document.body.appendChild(cd);
+    const video = cd.querySelector('video');
+    video.srcObject = stream;
+    const done = result => { stream.getTracks().forEach(t => t.stop()); cd.close(); cd.remove(); resolve(result); };
+    cd.querySelector('.camcancel').onclick = () => done({ cancelled: true });
+    cd.addEventListener('cancel', ev => { ev.preventDefault(); done({ cancelled: true }); });
+    cd.querySelector('.shutter').onclick = () => {
+      if (!video.videoWidth) return;
+      const c = document.createElement('canvas');
+      c.width = video.videoWidth;
+      c.height = video.videoHeight;
+      c.getContext('2d').drawImage(video, 0, 0);
+      c.toBlob(blob => done({ blob }), 'image/jpeg', 0.92);
+    };
+    cd.showModal();
+    video.play().catch(() => {});
+  });
+}
+
 function expenseDialog(e = null) {
   if (!openPeriod()) { toast('Crea prima una nota spese'); return; }
   const f = showDialog(`<h1>${e ? 'Modifica spesa' : 'Nuova spesa'}</h1>
-    <label class="btn primary block scanbtn" for="file">📷 Scansiona scontrino</label>
+    <button type="button" class="primary block" id="scancam">📷 Scansiona scontrino</button>
+    <label class="gallery" for="file">oppure scegli una foto dalla galleria</label>
     <input type="file" id="file" accept="image/*" class="sr-only">
     <div id="scanmsg" class="muted" aria-live="polite"></div>
     <label>Importo (€)</label><input name="amount" id="amount" inputmode="decimal" required placeholder="0,00" value="${e ? centsToInput(e.amount) : ''}">
@@ -147,15 +185,12 @@ function expenseDialog(e = null) {
     await refresh();
   });
   const file = f.querySelector('#file');
-  // Il pulsante è una <label> collegata al campo file: il browser apre da solo il selettore
-  // (fotocamera o galleria), senza dipendere da un click via script.
-  file.onchange = async () => {
-    const img = file.files[0];
-    if (!img) return;
-    const msg = f.querySelector('#scanmsg');
+  const msg = f.querySelector('#scanmsg');
+  const steps = { 'loading tesseract core': 'Carico il motore di lettura (la prima volta serve la rete)…',
+    'loading language traineddata': 'Carico la lingua italiana…', 'initializing api': 'Avvio la lettura…' };
+
+  async function readImage(img) {
     msg.textContent = 'Immagine ricevuta, preparo la lettura…';
-    const steps = { 'loading tesseract core': 'Carico il motore di lettura (la prima volta serve la rete)…',
-      'loading language traineddata': 'Carico la lingua italiana…', 'initializing api': 'Avvio la lettura…' };
     try {
       const { cents } = await scanReceipt(img, (status, p) => {
         msg.textContent = status === 'recognizing text' ? `Lettura in corso… ${Math.round(p * 100)}%` : (steps[status] || msg.textContent);
@@ -168,9 +203,26 @@ function expenseDialog(e = null) {
       }
     } catch (err) {
       msg.textContent = 'Lettura non riuscita: ' + (err && err.message ? err.message : 'riprova') + ' Puoi inserire l\'importo a mano.';
-    } finally {
-      file.value = ''; // permette di scegliere di nuovo la stessa foto
     }
+  }
+
+  // Fotocamera dentro l'app: non si esce dal browser, quindi Android non può chiudere la pagina
+  // per liberare memoria mentre si scatta (succede coi telefoni con poca RAM usando l'app fotocamera).
+  f.querySelector('#scancam').onclick = async () => {
+    msg.textContent = 'Apro la fotocamera…';
+    const r = await openCamera();
+    if (r.blob) return readImage(r.blob);
+    if (r.cancelled) { msg.textContent = ''; return; }
+    msg.textContent = r.error === 'NotAllowedError'
+      ? 'Permesso per la fotocamera negato. Consentilo dalle impostazioni del sito, oppure scegli una foto dalla galleria.'
+      : 'Fotocamera non disponibile su questo dispositivo: scegli una foto dalla galleria.';
+  };
+
+  file.onchange = async () => {
+    const img = file.files[0];
+    if (!img) return;
+    await readImage(img);
+    file.value = ''; // permette di scegliere di nuovo la stessa foto
   };
   const del = f.querySelector('#del');
   if (del) del.onclick = async () => {
