@@ -57,3 +57,10 @@ ErrorDocument 404 /404.html
     ForceType application/json
   </Files>
 </IfModule>
+
+# File di servizio del repository che non devono essere pubblici
+<IfModule mod_authz_core.c>
+  <FilesMatch "^(README\.md|CNAME|\.nojekyll)$">
+    Require all denied
+  </FilesMatch>
+</IfModule>
