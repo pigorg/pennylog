@@ -1,8 +1,8 @@
 {
-  "name": "Spese Personali",
-  "short_name": "Spese",
-  "description": "Note spese personali. I dati restano sul tuo telefono.",
-  "lang": "it",
+  "name": "Pennylog",
+  "short_name": "Pennylog",
+  "description": "Track your spending by category and by period. Your data stays in your own Google Drive.",
+  "lang": "en",
   "id": "./",
   "start_url": "./index.html",
   "scope": "./",

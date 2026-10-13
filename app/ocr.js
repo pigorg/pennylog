@@ -7,7 +7,7 @@ function loadScript(src) {
     const s = document.createElement('script');
     s.src = src;
     s.onload = res;
-    s.onerror = () => rej(new Error('Impossibile caricare il motore OCR (serve connessione la prima volta).'));
+    s.onerror = () => rej(new Error(t('Impossibile caricare il motore OCR (serve connessione la prima volta).')));
     document.head.appendChild(s);
   });
 }
@@ -22,32 +22,39 @@ async function downscale(file, max = 1600) {
   return new Promise(r => c.toBlob(r, 'image/jpeg', 0.9));
 }
 
-const toCents = m => {
-  const int = m[1].replace(/[.\s]/g, '');
-  return parseInt(int, 10) * 100 + parseInt(m[2], 10);
-};
+// "1.234,56", "1,234.56", "1 234,56", "18.40" → centesimi
+const toCents = m => parseInt(m[1].replace(/[.,\s]/g, ''), 10) * 100 + parseInt(m[2], 10);
 
-// Cerca il totale: priorità alle righe con TOTALE/IMPORTO/DA PAGARE, altrimenti l'importo più alto.
+// Righe che contengono il totale: italiano e inglese.
+const RX_TOTAL = /tot(ale)?\b|importo|da pagare|total|amount due|balance due|grand total/i;
+const RX_PAID = /pagato|contant|carta|bancomat|cash|card|visa|mastercard|tendered|paid/i;
+const RX_SKIP = /subtotal|sub total|sub-total|sconto|discount|resto|change|\b(iva|vat|tax)\b(?!.*total)/i;
+
+// Cerca il totale: priorità alle righe con TOTALE/TOTAL/IMPORTO, poi quelle con contante/carta/cash/card,
+// altrimenti l'importo più alto dello scontrino.
 function parseTotal(text) {
-  const num = /(\d{1,3}(?:[.\s]\d{3})*|\d+)[,.](\d{2})\b/g;
+  const num = /(\d{1,3}(?:[.,\s]\d{3})*|\d+)[,.](\d{2})\b/g;
   const strong = [];
   const weak = [];
   const all = [];
   for (const line of text.split('\n')) {
     const found = [...line.matchAll(num)].map(toCents);
     all.push(...found);
-    if (!found.length || /subtotale|iva|resto|sconto/i.test(line)) continue;
-    if (/tot(ale)?|importo|da pagare/i.test(line)) strong.push(Math.max(...found));
-    else if (/pagato|contant|carta|bancomat/i.test(line)) weak.push(Math.max(...found));
+    if (!found.length || RX_SKIP.test(line)) continue;
+    if (RX_TOTAL.test(line)) strong.push(Math.max(...found));
+    else if (RX_PAID.test(line)) weak.push(Math.max(...found));
   }
   const pool = strong.length ? strong : weak.length ? weak : all;
   return pool.length ? Math.max(...pool) : null;
 }
 
+// Lingua di lettura: italiano se l'app è in italiano, altrimenti inglese.
+const ocrLang = () => (LANG === 'it' ? 'ita' : 'eng');
+
 async function scanReceipt(file, onProgress) {
   await loadScript(TESS_URL);
   const img = await downscale(file);
-  const { data } = await Tesseract.recognize(img, 'ita', {
+  const { data } = await Tesseract.recognize(img, ocrLang(), {
     logger: m => onProgress && onProgress(m.status, m.progress),
   });
   return { text: data.text, cents: parseTotal(data.text) };

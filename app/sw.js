@@ -1,5 +1,5 @@
-const CACHE = 'spese-v22';
-const SHELL = ['./', 'index.html', 'styles.css', 'app.js', 'db.js', 'ocr.js', 'config.js', 'drive.js', 'privacy.html', 'terms.html',
+const CACHE = 'pennylog-v1';
+const SHELL = ['./', 'index.html', 'styles.css', 'app.js', 'i18n.js', 'db.js', 'ocr.js', 'config.js', 'drive.js',
   'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/logo-512.png'];
 
 self.addEventListener('install', e => {

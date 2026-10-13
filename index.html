@@ -1,35 +1,150 @@
 <!doctype html>
-<html lang="it">
+<html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#f4f6f6" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0e1514" media="(prefers-color-scheme: dark)">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Spese">
-<title>Spese Personali</title>
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-<link rel="stylesheet" href="styles.css">
+<meta name="theme-color" content="#0f766e">
+<title>Pennylog: expense tracker that keeps your data in your own Google Drive</title>
+<meta name="description" content="Pennylog is a free expense tracker for your phone. Track spending by category and by period, set a budget, scan receipts. Your data stays in your own Google Drive. No ads.">
+<link rel="canonical" href="https://pennylog.istore-lab.com/">
+<link rel="alternate" hreflang="en" href="https://pennylog.istore-lab.com/">
+<link rel="alternate" hreflang="it" href="https://pennylog.istore-lab.com/it/">
+<link rel="alternate" hreflang="x-default" href="https://pennylog.istore-lab.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Pennylog">
+<meta property="og:title" content="Pennylog: track your spending, keep your data">
+<meta property="og:description" content="A free expense tracker that saves your data in your own Google Drive. Budgets, categories, receipt scanning. No ads.">
+<meta property="og:url" content="https://pennylog.istore-lab.com/">
+<meta property="og:image" content="https://pennylog.istore-lab.com/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<link rel="stylesheet" href="assets/site.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Pennylog","applicationCategory":"FinanceApplication","operatingSystem":"Android, iOS, Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Expense tracker that stores your data in your own Google Drive.","url":"https://pennylog.istore-lab.com/","publisher":{"@type":"Organization","name":"istore-lab.com","url":"https://istore-lab.com"}}
+</script>
 </head>
-<body class="locked">
-<header id="top"><span id="sync" role="button" tabindex="0"></span></header>
-<main id="view"></main>
-<nav id="tabs" aria-label="Sezioni">
-  <button data-tab="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Spese</button>
-  <button data-tab="report"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>Report</button>
-  <button data-tab="history"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>Storico</button>
-  <button data-tab="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.8"/><path d="M4.5 20.5c0-3.8 3.4-6 7.5-6s7.5 2.2 7.5 6"/></svg>Impostazioni</button>
-</nav>
-<dialog id="dlg"></dialog>
-<div id="toast" role="status" aria-live="polite"></div>
-<script src="db.js"></script>
-<script src="ocr.js"></script>
-<script src="config.js"></script>
-<script src="drive.js"></script>
-<script src="app.js"></script>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./"><img src="assets/icon-192.png" alt="" width="36" height="36">Pennylog</a>
+    <nav aria-label="Main">
+      <a class="hide-s" href="#features">Features</a>
+      <a class="hide-s" href="#privacy">Privacy</a>
+      <a class="hide-s" href="#faq">FAQ</a>
+      <a class="lang" href="it/" hreflang="it" lang="it">Italiano</a>
+      <a class="btn primary sm" href="app/">Open the app</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <h1>Track your spending.<br><em>Keep your data.</em></h1>
+      <p class="lead">Pennylog is a simple expense tracker for your phone. Your data lives in <b>your own Google Drive</b>: no account to create, no ads, and no server collecting what you spend.</p>
+      <div class="cta">
+        <a class="btn primary" href="app/">Open the app</a>
+        <a class="btn" href="#how">How it works</a>
+      </div>
+      <ul class="badges">
+        <li>Free to use</li><li>Works offline</li><li>Android, iPhone and desktop</li>
+      </ul>
+    </div>
+    <div class="phones" aria-hidden="true">
+      <div class="phone"><img src="assets/shot-home-en.jpg" alt="" width="390" height="844" loading="eager"></div>
+      <div class="phone"><img src="assets/shot-report-en.jpg" alt="" width="390" height="844" loading="eager"></div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <h2>Everything you need to stay on budget</h2>
+    <p class="sub">Pennylog does one job: it shows you where your money goes, for the period that matters to you.</p>
+    <div class="grid">
+      <div class="card"><div class="ico">📅</div><h3>Periods your way</h3><p>Not tied to the calendar month. Open a note when you want and close it when you want: payday to payday, or a two-week trip.</p></div>
+      <div class="card"><div class="ico">🎯</div><h3>A budget that counts down</h3><p>Set a budget for the period and watch what is left shrink with every expense. It carries over to your next period.</p></div>
+      <div class="card"><div class="ico">🏷️</div><h3>Your own categories</h3><p>Start with six and add, rename or remove as many as you like.</p></div>
+      <div class="card"><div class="ico">📷</div><h3>Scan receipts</h3><p>Take a photo and Pennylog reads the total for you, right on your phone. The picture never leaves your device.</p></div>
+      <div class="card"><div class="ico">📊</div><h3>Reports that explain</h3><p>Totals, daily average, and a breakdown by category with share, average and largest expense, plus a monthly summary.</p></div>
+      <div class="card"><div class="ico">🗂️</div><h3>History with notes</h3><p>Closing a period saves it with its dates and a note. Look back whenever you want, or clear it in one tap.</p></div>
+      <div class="card"><div class="ico">✈️</div><h3>Works offline</h3><p>Add expenses anywhere. They sync to your Drive when you are back online.</p></div>
+      <div class="card"><div class="ico">💱</div><h3>Your currency</h3><p>US dollar, euro, pound and more, with number and date formats that match your language.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="how">
+  <div class="wrap">
+    <h2>Up and running in a minute</h2>
+    <p class="sub">No sign-up form, no password to invent.</p>
+    <ol class="steps">
+      <li><b>Open and install</b><span>Open Pennylog in Chrome (or Safari on iPhone) and add it to your home screen. It opens full screen like any app.</span></li>
+      <li><b>Sign in with Google</b><span>Choose your account and allow one thing: a private folder in your Drive just for the app.</span></li>
+      <li><b>Add your spending</b><span>Type an amount or scan a receipt, pick a category, done. Your report updates right away.</span></li>
+    </ol>
+  </div>
+</section>
+
+<section id="privacy">
+  <div class="wrap two">
+    <div>
+      <h2>Your spending is nobody’s business but yours</h2>
+      <p class="sub" style="margin-bottom:0">Most expense apps keep your data on their servers. Pennylog has no server at all.</p>
+    </div>
+    <div>
+      <ul class="check">
+        <li><b>Saved in your Google Drive</b>, in a hidden folder reserved for the app. Switch phones and your data comes with you.</li>
+        <li><b>One narrow permission.</b> The app cannot see, open or change any other file in your Drive.</li>
+        <li><b>No ads, no tracking, no analytics.</b> Nothing is sold or shared.</li>
+        <li><b>Receipt photos stay on your phone.</b> They are read on the device and never uploaded.</li>
+        <li><b>You are in control.</b> Export a backup, clear your history, or revoke access at any time.</li>
+      </ul>
+      <p class="small muted">Details in the <a href="privacy.html">privacy policy</a>.</p>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="faq">
+  <div class="wrap">
+    <h2>Questions</h2>
+    <p class="sub">Short answers to the things people ask first.</p>
+    <details><summary>Is Pennylog free?</summary><p>Yes. There are no ads, and the app costs almost nothing to run because it has no servers and no database. A paid option for extra features may come later; the basics stay free.</p></details>
+    <details><summary>Can you see my expenses?</summary><p>No. Your data goes from your phone straight to your own Google Drive. It never passes through a server of ours.</p></details>
+    <details><summary>Why Google Drive?</summary><p>It gives you backup and sync without us holding your data, and without a new password to manage. If you lose or change your phone, sign in with the same Google account and your expenses are back.</p></details>
+    <details><summary>What if I am offline?</summary><p>Everything works. Changes are stored on the phone and sent to Drive when the connection returns.</p></details>
+    <details><summary>How does receipt scanning work?</summary><p>You take a photo, Pennylog reads the text on your device and suggests the total. You always confirm or correct the amount before saving. The photo is not stored or uploaded.</p></details>
+    <details><summary>Can I use it on more than one device?</summary><p>Yes. Sign in with the same Google account and the data stays in sync, with the most recent change winning.</p></details>
+    <details><summary>Which currencies and languages are supported?</summary><p>English and Italian, with US dollar, euro, pound, Canadian and Australian dollar, Swiss franc and a few more. More are planned.</p></details>
+    <details><summary>Will it be on Google Play?</summary><p>That is the plan. Until then you can install it from this page in a few seconds, without any store.</p></details>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="final">
+      <h2>Start tracking in a minute</h2>
+      <p>Free, private, and ready on any phone.</p>
+      <a class="btn" href="app/">Open Pennylog</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms of service</a>
+    <a href="mailto:informazioni@istore-lab.com">Contact</a>
+    <a href="it/" hreflang="it" lang="it">Italiano</a>
+    <span class="by">Pennylog by <a href="https://istore-lab.com">istore-lab.com</a></span>
+  </div>
+</footer>
+
 </body>
 </html>

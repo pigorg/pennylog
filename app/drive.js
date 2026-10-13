@@ -2,10 +2,11 @@
 // Tutto avviene dal browser dell'utente verso Google: nessun server intermedio.
 const GSI_URL = 'https://accounts.google.com/gsi/client';
 const SCOPES = 'openid email profile https://www.googleapis.com/auth/drive.appdata';
+// Nome storico del file su Drive: non si cambia, altrimenti chi ha già dati non li ritroverebbe.
 const DATA_FILE = 'spese-data.json';
-const LS_USER = 'sp_user';
-const LS_DIRTY = 'sp_dirty';
-const LS_LAST = 'sp_last_sync';
+const LS_USER = 'pl_user';
+const LS_DIRTY = 'pl_dirty';
+const LS_LAST = 'pl_last_sync';
 
 const store = {
   get: k => { try { return localStorage.getItem(k); } catch { return null; } },

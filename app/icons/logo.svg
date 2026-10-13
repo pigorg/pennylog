@@ -1,10 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Pennylog by istore-lab.com">
 <defs>
   <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14b8a6"/><stop offset="1" stop-color="#0b4f4a"/></linearGradient>
   <linearGradient id="coin" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fde68a"/><stop offset="1" stop-color="#f59e0b"/></linearGradient>
 </defs>
-<rect width="512" height="512" fill="url(#bg)"/>
-<g transform="translate(256 256) scale(.86) translate(-258 -179)">
+<rect width="512" height="512" rx="112" fill="url(#bg)"/>
+<g transform="translate(256 38) scale(.84) translate(-258 -58)">
   <g fill="#fff">
     <rect x="76" y="230" width="44" height="60" rx="8" opacity=".35"/>
     <rect x="136" y="190" width="44" height="100" rx="8" opacity=".5"/>
@@ -18,5 +18,8 @@
   <circle cx="410" cy="186" r="38" fill="none" stroke="#b45309" stroke-width="4"/>
   <circle cx="370" cy="224" r="64" fill="url(#coin)"/>
   <circle cx="370" cy="224" r="51" fill="none" stroke="#b45309" stroke-opacity=".55" stroke-width="5"/>
-  <text x="370" y="226" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="70" font-weight="700" fill="#92400e" text-anchor="middle" dominant-baseline="central">€</text></g>
+  <text x="370" y="226" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="70" font-weight="700" fill="#92400e" text-anchor="middle" dominant-baseline="central">$</text></g>
+<text x="256" y="338" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="92" font-weight="700" fill="#fff" text-anchor="middle" letter-spacing="-1">Pennylog</text>
+<line x1="176" y1="366" x2="336" y2="366" stroke="#fff" stroke-opacity=".45" stroke-width="4" stroke-linecap="round"/>
+<text x="256" y="424" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="46" font-weight="600" fill="#fff" text-anchor="middle">by istore-lab.com</text>
 </svg>

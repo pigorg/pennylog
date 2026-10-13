@@ -1,4 +1,4 @@
-const DB_NAME = 'spese-personali';
+const DB_NAME = 'pennylog';
 const DB_VER = 1;
 const STORES = ['categories', 'periods', 'expenses'];
 let dbp;
