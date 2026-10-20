@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Contact – Pennylog</title>
+<meta name="description" content="Need a new feature or found a problem? Write to us. Pennylog is completely free.">
+<link rel="canonical" href="https://pennylog.istore-lab.com/contact.html">
+<link rel="alternate" hreflang="it" href="https://pennylog.istore-lab.com/it/contatti.html">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/site.css">
+<!-- Prima del tag di Google: consenso negato e misurazione sospesa finché il visitatore non accetta il banner (assets/consent.js) -->
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  window['ga-disable-G-GJSYVKX67S'] = true;
+  gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', wait_for_update: 500 });
+  gtag('set', 'ads_data_redaction', true);
+</script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GJSYVKX67S"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-GJSYVKX67S');
+</script>
+<script src="/assets/consent.js" defer></script>
+</head>
+<body>
+<main class="doc">
+  <p><a class="back" href="./">← Back to Pennylog</a> · <a class="back" href="it/contatti.html" hreflang="it" lang="it">Italiano</a></p>
+  <h1>Contact</h1>
+  <p class="lead-doc">Pennylog is completely free. If you need a new feature or run into a problem, write to us using the form below.</p>
+
+  <form id="form" class="cform" action="/contact.php" method="post" novalidate
+    data-ok="Thank you! Your message has been sent. We will reply to the email address you gave." data-err="Sorry, the message could not be sent. Please try again later or write to informazioni@istore-lab.com." data-invalid="Please check the fields: name, a valid email and a message of at least 10 characters." data-wait="Too many messages in a short time. Please try again later." data-sending="Sending…">
+    <input type="hidden" name="lang" value="en">
+    <input type="hidden" name="ts" value="">
+    <div class="hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+    <p id="status" class="cstatus" role="status" aria-live="polite" hidden></p>
+    <label for="f-name">Name or username <span class="req">(required)</span></label>
+    <input id="f-name" name="name" type="text" maxlength="80" required autocomplete="name">
+    <label for="f-email">Email <span class="req">(required)</span></label>
+    <input id="f-email" name="email" type="email" maxlength="120" required autocomplete="email" inputmode="email">
+    <label for="f-msg">Message <span class="req">(required)</span></label>
+    <textarea id="f-msg" name="message" rows="7" minlength="10" maxlength="3000" required></textarea>
+    <p class="chint">Tell us what happened or what you would like to see. If you report a problem, mention your phone and browser.</p>
+    <label class="ccheck"><input type="checkbox" name="privacy" value="1" required><span>I have read the <a href="privacy.html#contact-form">privacy policy</a> and agree that my data is used to reply to my message.</span></label>
+    <button class="btn primary" type="submit">Send message</button>
+  </form>
+
+  <h2>Reference</h2>
+  <p><a href="mailto:informazioni@istore-lab.com">informazioni@istore-lab.com</a><br>
+  <a href="https://istore-lab.com">istore-lab.com</a><br>
+  Serravalle, Republic of San Marino</p>
+  <p class="legal-links"><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Service</a><a href="cookies.html">Cookie Policy</a><button type="button" class="cookie-link" data-cookie-settings>Cookie settings</button></p>
+</main>
+<script src="/assets/contact.js" defer></script>
+</body>
+</html>

@@ -50,4 +50,6 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://pennylog.istore-lab.com/cookies.html"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://pennylog.istore-lab.com/it/cookies.html"/>
   </url>
+  <url><loc>https://pennylog.istore-lab.com/contact.html</loc></url>
+  <url><loc>https://pennylog.istore-lab.com/it/contatti.html</loc></url>
 </urlset>

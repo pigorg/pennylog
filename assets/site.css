@@ -146,3 +146,21 @@ table.cookies { width: 100%; border-collapse: collapse; font-size: .92rem; margi
 table.cookies th, table.cookies td { text-align: left; padding: 10px 12px; border: 1px solid var(--line); vertical-align: top; }
 table.cookies th { background: color-mix(in srgb, var(--accent) 8%, transparent); }
 .table-wrap { overflow-x: auto; }
+
+/* Modulo contatti */
+.lead-doc { font-size: 1.08rem; margin: 10px 0 22px; }
+.cform { display: grid; gap: 8px; margin: 8px 0 34px; }
+.cform label { font-weight: 600; font-size: .95rem; margin-top: 8px; }
+.cform .req { font-weight: 400; color: var(--muted); font-size: .85rem; }
+.cform input[type=text], .cform input[type=email], .cform textarea { width: 100%; font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.cform textarea { resize: vertical; min-height: 140px; }
+.cform input:focus-visible, .cform textarea:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+.cform .chint { color: var(--muted); font-size: .9rem; margin: 0; }
+.cform .ccheck { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; margin-top: 10px; }
+.cform .ccheck input { margin-top: 4px; width: 18px; height: 18px; flex: none; accent-color: var(--accent); }
+.cform .btn { justify-self: start; margin-top: 10px; border: 0; cursor: pointer; font: inherit; font-weight: 600; }
+.cform .btn:disabled { opacity: .6; cursor: default; }
+.cform .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.cstatus { border-radius: 12px; padding: 12px 14px; margin: 0 0 8px; font-weight: 600; }
+.cstatus.ok { background: color-mix(in srgb, #16a34a 16%, transparent); border: 1px solid #16a34a; }
+.cstatus.bad { background: color-mix(in srgb, #dc2626 14%, transparent); border: 1px solid #dc2626; }

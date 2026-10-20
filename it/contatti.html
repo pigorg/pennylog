@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Contatti – Pennylog</title>
+<meta name="description" content="Ti serve una nuova funzione o hai trovato un problema? Scrivici. Pennylog è completamente gratuito.">
+<link rel="canonical" href="https://pennylog.istore-lab.com/it/contatti.html">
+<link rel="alternate" hreflang="en" href="https://pennylog.istore-lab.com/contact.html">
+<link rel="icon" href="../assets/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<!-- Prima del tag di Google: consenso negato e misurazione sospesa finché il visitatore non accetta il banner (assets/consent.js) -->
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  window['ga-disable-G-GJSYVKX67S'] = true;
+  gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', wait_for_update: 500 });
+  gtag('set', 'ads_data_redaction', true);
+</script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GJSYVKX67S"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-GJSYVKX67S');
+</script>
+<script src="/assets/consent.js" defer></script>
+</head>
+<body>
+<main class="doc">
+  <p><a class="back" href="./">← Torna a Pennylog</a> · <a class="back" href="../contact.html" hreflang="en" lang="en">English</a></p>
+  <h1>Contatti</h1>
+  <p class="lead-doc">Pennylog è completamente gratuito. Se ti serve una nuova funzione o incontri un problema, scrivici usando il modulo qui sotto.</p>
+
+  <form id="form" class="cform" action="/contact.php" method="post" novalidate
+    data-ok="Grazie! Il messaggio è stato inviato. Ti risponderemo all'indirizzo email indicato." data-err="Spiacenti, non è stato possibile inviare il messaggio. Riprova più tardi o scrivi a informazioni@istore-lab.com." data-invalid="Controlla i campi: nome, un'email valida e un messaggio di almeno 10 caratteri." data-wait="Troppi messaggi in poco tempo. Riprova più tardi." data-sending="Invio…">
+    <input type="hidden" name="lang" value="it">
+    <input type="hidden" name="ts" value="">
+    <div class="hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+    <p id="status" class="cstatus" role="status" aria-live="polite" hidden></p>
+    <label for="f-name">Nome o username <span class="req">(obbligatorio)</span></label>
+    <input id="f-name" name="name" type="text" maxlength="80" required autocomplete="name">
+    <label for="f-email">Email <span class="req">(obbligatorio)</span></label>
+    <input id="f-email" name="email" type="email" maxlength="120" required autocomplete="email" inputmode="email">
+    <label for="f-msg">Messaggio <span class="req">(obbligatorio)</span></label>
+    <textarea id="f-msg" name="message" rows="7" minlength="10" maxlength="3000" required></textarea>
+    <p class="chint">Raccontaci cosa è successo o cosa vorresti vedere. Se segnali un problema, indica telefono e browser.</p>
+    <label class="ccheck"><input type="checkbox" name="privacy" value="1" required><span>Ho letto l'<a href="privacy.html#modulo-contatti">informativa sulla privacy</a> e accetto che i miei dati siano usati per rispondere al mio messaggio.</span></label>
+    <button class="btn primary" type="submit">Invia messaggio</button>
+  </form>
+
+  <h2>Riferimenti</h2>
+  <p><a href="mailto:informazioni@istore-lab.com">informazioni@istore-lab.com</a><br>
+  <a href="https://istore-lab.com">istore-lab.com</a><br>
+  Serravalle, Repubblica di San Marino</p>
+  <p class="legal-links"><a href="privacy.html">Privacy Policy</a><a href="terms.html">Termini di servizio</a><a href="cookies.html">Cookie Policy</a><button type="button" class="cookie-link" data-cookie-settings>Impostazioni cookie</button></p>
+</main>
+<script src="/assets/contact.js" defer></script>
+</body>
+</html>
