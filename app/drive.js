@@ -1,7 +1,8 @@
 // Accesso con Google + sincronizzazione su Drive (cartella privata appDataFolder).
 // Tutto avviene dal browser dell'utente verso Google: nessun server intermedio.
 const GSI_URL = 'https://accounts.google.com/gsi/client';
-const SCOPES = 'openid email profile https://www.googleapis.com/auth/drive.appdata';
+const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
+const SCOPES = 'openid email profile ' + DRIVE_SCOPE;
 // Nome storico del file su Drive: non si cambia, altrimenti chi ha già dati non li ritroverebbe.
 const DATA_FILE = 'spese-data.json';
 const LS_USER = 'pl_user';
@@ -42,6 +43,11 @@ const Auth = {
           scope: SCOPES,
           callback: r => {
             if (r.error) return this.pending.reject(r);
+            // Google lascia togliere la spunta al permesso Drive: senza, ogni chiamata a Drive darebbe 403.
+            if (!google.accounts.oauth2.hasGrantedAllScopes(r, DRIVE_SCOPE)) {
+              google.accounts.oauth2.revoke(r.access_token, () => {});
+              return this.pending.reject({ type: 'scope_missing' });
+            }
             this.token = r.access_token;
             this.tokenExp = Date.now() + (Number(r.expires_in) - 60) * 1000;
             this.pending.resolve(r.access_token);
@@ -96,6 +102,15 @@ const Auth = {
 async function drive(token, url, opts = {}) {
   const r = await fetch(url, { ...opts, headers: { Authorization: `Bearer ${token}`, ...(opts.headers || {}) } });
   if (r.status === 401) { Auth.token = null; throw { type: 'unauthorized' }; }
+  if (r.status === 403) {
+    let reason = '';
+    try { const j = await r.clone().json(); reason = JSON.stringify(j.error || '').toLowerCase(); } catch { /* corpo non JSON */ }
+    if (/insufficient|scope/.test(reason)) {
+      google.accounts.oauth2.revoke(token, () => {});
+      Auth.token = null; Auth.tokenExp = 0;
+      throw { type: 'scope_missing' };
+    }
+  }
   if (!r.ok) {
     let msg = '';
     try { msg = (await r.json()).error.message || ''; } catch { /* corpo non JSON */ }
@@ -176,10 +191,11 @@ const Sync = {
       this.set('ok');
       if (applied && this.onMerged) await this.onMerged();
     } catch (e) {
-      this.lastError = (e && (e.message || e.type || e.error)) || String(e);
       console.error('Sync:', e);
-      const t = e && e.type;
-      this.set(t === 'needs_interaction' || t === 'popup_failed_to_open' || t === 'popup_closed' || t === 'unauthorized' || t === 'gsi_unavailable' || (e && e.error) ? 'auth' : 'error');
+      const kind = e && e.type;
+      this.scopeMissing = kind === 'scope_missing';
+      this.lastError = this.scopeMissing ? t('Manca il permesso per Google Drive. Tocca sincronizza e spunta la casella del permesso Drive.') : (e && (e.message || e.type || e.error)) || String(e);
+      this.set(kind === 'needs_interaction' || kind === 'popup_failed_to_open' || kind === 'popup_closed' || kind === 'unauthorized' || kind === 'gsi_unavailable' || this.scopeMissing || (e && e.error) ? 'auth' : 'error');
     } finally {
       this.running = false;
       if (this.again) { this.again = false; this.run(); }

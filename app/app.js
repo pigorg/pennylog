@@ -416,7 +416,7 @@ Sync.onMerged = refresh;
 
 async function syncNow() {
   const ok = await Sync.run(true); // chiamata da un tocco: può aprire la finestra di Google
-  if (!ok && Sync.state === 'auth') toast(t('Autorizza l\'accesso a Google per sincronizzare'));
+  if (!ok && Sync.state === 'auth') toast(Sync.scopeMissing ? t('Manca il permesso per Google Drive. Tocca sincronizza e spunta la casella del permesso Drive.') : t('Autorizza l\'accesso a Google per sincronizzare'));
   if (!ok && Sync.state === 'error') toast(Sync.lastError || t('Errore di sincronizzazione'));
 }
 
@@ -428,6 +428,7 @@ async function linkAccount() {
     await Auth.signIn();
   } catch (e) {
     const code = e && (e.type || e.error);
+    if (code === 'scope_missing') return toast(t('Manca il permesso per Google Drive. Riprova e spunta la casella del permesso Drive.'));
     return toast(code === 'popup_closed' ? t('Accesso annullato') : code === 'popup_failed_to_open' ? t('Consenti i popup del browser e riprova') : t('Accesso non riuscito'));
   }
   toast(t('Account collegato'));
@@ -506,6 +507,7 @@ async function login() {
   } catch (e) {
     btn.disabled = false;
     const code = e && (e.type || e.error);
+    if (code === 'scope_missing') return loginView(t('Manca il permesso per Google Drive. Riprova e spunta la casella del permesso Drive.'));
     if (code === 'popup_closed') return loginView(t('Accesso annullato.'));
     if (code === 'popup_failed_to_open') return loginView(t('Il browser ha bloccato la finestra di accesso. Consenti i popup e riprova.'));
     if (code === 'gsi_unavailable') return loginView(t('Impossibile contattare Google. Controlla la connessione e riprova.'));

@@ -181,6 +181,8 @@ const EN = {
   'Accesso Google non configurato: inserisci il Client ID in <b>config.js</b> (vedi README.md).': 'Google sign-in not configured: add the Client ID in <b>config.js</b> (see README).',
   'Accedi con Google': 'Sign in with Google',
   'Accesso annullato.': 'Sign-in cancelled.',
+  'Manca il permesso per Google Drive. Tocca sincronizza e spunta la casella del permesso Drive.': 'Google Drive permission is missing. Tap sync and tick the Drive permission box.',
+  'Manca il permesso per Google Drive. Riprova e spunta la casella del permesso Drive.': 'Google Drive permission is missing. Try again and tick the Drive permission box.',
   'Il browser ha bloccato la finestra di accesso. Consenti i popup e riprova.': 'The browser blocked the sign-in window. Allow pop-ups and try again.',
   'Impossibile contattare Google. Controlla la connessione e riprova.': 'Could not reach Google. Check your connection and try again.',
   'Accesso non riuscito. Riprova.': 'Sign-in failed. Try again.',

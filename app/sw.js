@@ -1,4 +1,4 @@
-const CACHE = 'pennylog-v5';
+const CACHE = 'pennylog-v6';
 const VENDOR = 'pennylog-vendor-v1'; // motore di lettura scontrini: grande e immutabile, si scarica una sola volta
 const SHELL = ['./', 'index.html', 'styles.css', 'app.js', 'i18n.js', 'db.js', 'ocr.js', 'config.js', 'drive.js',
   'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/logo-512.png'];
